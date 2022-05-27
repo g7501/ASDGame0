@@ -1,0 +1,28 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include "AnimationData.h"
+
+
+
+
+
+
+
+class Component
+{
+public:
+	sf::Sprite Visual;
+	std::string TextureName;
+	sf::Vector2f RelativeLocation;
+	float Rotation = 0;
+	sf::Vector2f Scale;
+
+	Component(std::string inName);
+	
+	std::string CurrentAnimState = "Idle";
+	int CurrentAnimFrame;
+
+	void RenderComponent(sf::RenderWindow* window, sf::Vector2f RenderPosition);
+	
+};
+
