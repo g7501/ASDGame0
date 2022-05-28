@@ -24,6 +24,7 @@ public:
 	ProjectileData ProjectileInst;
 	
 	sf::Vector2f AimingDirection = sf::Vector2f(0,0);
+
 	
 };
 

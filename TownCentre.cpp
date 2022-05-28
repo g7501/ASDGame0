@@ -1,7 +1,7 @@
 #include "TownCentre.h"
 #include<iostream>
 
-TownCentre::TownCentre() : Building("Buildings/TownCentre",sf::Vector2f(0,0))
+TownCentre::TownCentre() : Building("TownCentre",sf::Vector2f(0,0))
 {
 	size = 10;
 	Health = 1000;

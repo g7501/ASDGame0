@@ -3,16 +3,20 @@
 
 void Soldier::EntityLogic(double Deltatime)
 {
+
+
+
 	Entity::EntityLogic(Deltatime);
 	//unit vector calculations can be put somewhere else
 	//is in the entity class now
 
-	if (DistanceTo(Target)<Target->size)
+	if (DistanceTo(Target)<Target->size+size)
 	{
 		//attack
 		if (CountdownToNextAttack<0)
 		{
 			AttackEntity(Target);
+			CountdownToNextAttack = AttackDelay;
 		}
 		else
 		{
@@ -39,9 +43,43 @@ Soldier::Soldier(std::string inName, sf::Vector2f SpawnLocation, Entity* inTarge
 	
 	
 	Loc = SpawnLocation;
-	Health = 50;
-	Attack = 5;
+
+	if (inName == "Grunt")
+	{
+		Health = 50;
+		Attack = 5;
+		size = 5;
+		AttackDelay = 1.5;
+		Speed = 100;
+	}
+
+	if (inName == "Giant")
+	{
+		Health = 175;
+		Attack = 20;
+		size = 10;
+		AttackDelay = 2.5;
+		Speed = 85;
+	}
+	if (inName == "Raider")
+	{
+		Health = 30;
+		Attack = 6;
+		size = 6;
+		AttackDelay = 1.2;
+		Speed = 140;
+	}
+
+	if (inName == "Knight")
+	{
+		Health = 125;
+		Attack = 12;
+		size = 6;
+		AttackDelay = 1.4;
+		Speed = 95;
+	}
 
 
-	Components.push_back(new Component("Grunt"));
+
+	Components.push_back(new Component(inName));
 }

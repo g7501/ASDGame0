@@ -2,9 +2,9 @@
 #include <iostream>
 
 
-Projectile::Projectile(float SpeedT, int DamageT, float TimeT, sf::Vector2f DirectionT) : Entity("Arrow")
+Projectile::Projectile(float SpeedT, int DamageT, float TimeT, sf::Vector2f DirectionT, std::string type) : Entity("Arrow")
 {
-	Components.push_back(new Component("Arrow"));
+	Components.push_back(new Component(type));
 	Speed = SpeedT;
 	Damage = DamageT;
 	RemainingTime = TimeT;
@@ -21,4 +21,5 @@ Projectile::Projectile(float SpeedT, int DamageT, float TimeT, sf::Vector2f Dire
 void Projectile::EntityLogic(double DeltaTime)
 {
 	Loc = (Loc + Direction * Speed * (float)DeltaTime);
+	RemainingTime -= DeltaTime;
 }

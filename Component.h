@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "AnimationData.h"
-
+#include "Camera.h"
 
 
 

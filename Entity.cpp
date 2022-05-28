@@ -3,23 +3,31 @@
 
 void Entity::EntityLogic(double Deltatime)
 {
-	if (Health<=0)
-	{
+	//probably needs removing
+	//if (Health<=0)
+	//{
 
-		delete this;
-	}
+		//delete this;
+	//}
+
 }
 
 
 
-void Entity::RenderEntity(sf::RenderWindow* window, sf::Vector2f Camera)
+void Entity::RenderEntity(sf::RenderWindow* window)
 {
 	//Sprite.setPosition(Sprite.getPosition()+Camera);
 	//window->draw(Sprite);
-	Loc += Camera;
+	
+	sf::Vector2f LocalPosition = (Loc + Camera::Location)*Camera::Zoom;
 	for(Component* i: Components)
 	{
-		i->RenderComponent(window, Loc);
+		i->RenderComponent(window,LocalPosition);
+	}
+	//sound is part of rendering
+	for(std::pair<std::string, SoundComponent*> i: AudioComponents)
+	{
+		i.second->AudioLogic(Loc);
 	}
 	
 }
@@ -28,6 +36,7 @@ void Entity::AttackEntity(Entity* ATarget)
 {
 	ATarget->Health -= Attack;
 	CountdownToNextAttack = AttackDelay;
+	std::cout << ATarget->Health << std::endl;
 }
 
 
@@ -64,6 +73,11 @@ Entity::~Entity()
 	for (Component* i: Components)
 	{
 		delete i;
+	}
+
+	for (std::pair<std::string, SoundComponent*> i : AudioComponents)
+	{
+		delete i.second;
 	}
 }
 

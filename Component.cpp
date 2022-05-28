@@ -22,6 +22,7 @@ Component::Component(std::string inName)
 
 void Component::RenderComponent(sf::RenderWindow* window, sf::Vector2f RenderPosition)
 {
+	Visual.setScale(Camera::Zoom*0.5,Camera::Zoom*0.5);
 	Visual.setRotation(Rotation);
 	Visual.setPosition(RenderPosition+RelativeLocation);
 	window->draw(Visual);

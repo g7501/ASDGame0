@@ -3,30 +3,7 @@
 #include <stdlib.h>         
 
 
-void GameInstance::CameraMovement(double DeltaTime)
-{
-    CameraDelta = sf::Vector2f(0,0);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-    {
-        CameraDelta += sf::Vector2f(0, 400*DeltaTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-    {
-        CameraDelta += sf::Vector2f(0, -400 * DeltaTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-    {
-        CameraDelta += sf::Vector2f(400 * DeltaTime, 0);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-    {
-        CameraDelta += sf::Vector2f(-400 * DeltaTime, 0);
-    }
-
-
-    CameraLocation += CameraDelta;
-}
 
 void GameInstance::GoldCalulation(double DeltaTime)
 {
@@ -89,18 +66,18 @@ void GameInstance::HandleButtons(double DeltaTime)
                 
                 if(CurrentPlaceObject=="StandardTower" && Gold>=100)
                 {
-                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition()));
+                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom-Camera::Location));
                     Gold -= 100;
                 }
                 if (CurrentPlaceObject == "Mine" && Gold >= 150)
                 {
-                    Mines.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition()));
+                    Mines.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
                     Gold -= 150;
                 }
 
                 if (CurrentPlaceObject == "Mage" && Gold >= 150)
                 {
-                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition()));
+                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
                     Gold -= 150;
                 }
             }
@@ -109,7 +86,7 @@ void GameInstance::HandleButtons(double DeltaTime)
     }
     else
     {
-        MouseCooldown -= DeltaTime;
+        MouseCooldown -= DeltaTime * ! sf::Mouse::isButtonPressed(sf::Mouse::Left);
     }
 
 
@@ -145,7 +122,7 @@ void GameInstance::ProjectileCollision(Projectile* inst)
 {
     for(Soldier* i: Soldiers)
     {
-        if (i->DistanceTo(inst)<25)
+        if (i->DistanceTo(inst)<25 && inst->Name=="Arrow" || i->DistanceTo(inst) < 55 && inst->Name == "Magic")
         {
             
             i->Health -= inst->Damage;
@@ -162,27 +139,116 @@ void GameInstance::ProjectileCollision(Projectile* inst)
                 delete t1;
                
             }
-            Projectile* t2 = inst;
-            Projectiles.erase(std::remove(Projectiles.begin(), Projectiles.end(), inst), Projectiles.end());
-            delete t2;
+
+            ProjectileRemovals.push_back(inst);
 
             return;
         }
     }
 }
 
+
+
+void GameInstance::FindBuildingtoAttack(Soldier* inst)
+{
+    if (inst->Name=="Raider")
+    {
+        //might want to make this a little more verbose
+        if (Mines.size()>0)
+        {
+            inst->Target = Mines.at(rand()%Mines.size());
+        }
+        else
+        {
+            inst->Target = Town;
+        }
+    }
+
+    if (inst->Name == "Knight")
+    {
+        //might want to make this a little more verbose
+        if (Buildings.size() > 0)
+        {
+            inst->Target = Buildings.at(rand() % Buildings.size());
+        }
+        else
+        {
+            inst->Target = Town;
+        }
+    }
+
+
+}
+
 void GameInstance::SpawnEnemies()
 {
+    Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand()%2000-1000, std::rand() % 2000 - 1000), Town));
+    Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    
 
 
+    if (Buildings.size()>4)
+    {
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+    }
 
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand()%2000-1000, std::rand() % 2000 - 1000), Town));
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    if (Mines.size()>3 || Gold>650)
+    {
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+    }
 
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
-    Soldiers.push_back(new Soldier("Soldiers/grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    if (TotalTime>15)
+    {
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+    }
+
+    if (TotalTime>60)
+    {
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+    }
+
+    if (Mines.size()>6 && TotalTime>45)
+    {
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+    }
+
+    if (TotalTime>90)
+    {
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+    }
+
+    if(Buildings.size() > 8)
+    {
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+        Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
+    }
+    
 }
 
 
@@ -209,37 +275,60 @@ void GameInstance::GameLoop()
         {
             if (event.type == sf::Event::Closed)
                 window->close();
-            
+            if (event.type == sf::Event::MouseWheelMoved)
+            {
+                Camera::Zoom += (float)event.mouseWheel.delta*0.1;
+                if (Camera::Zoom<0.5)
+                {
+                    Camera::Zoom = 0.5;
+                }
+                if (Camera::Zoom>2)
+                {
+                    Camera::Zoom = 2;
+                }
+            }
         }
 
 
 
         
-        CameraMovement(DeltaTime);
+        Camera::CameraMovement(DeltaTime);
 
 
 
         window->clear();
         //Render background
-        TerrainData->RenderTerrain(window, CameraDelta);
+        TerrainData->RenderTerrain(window);
 
         //render buildings
         
         AimAtNearestEnemy(Town);
-        Town->RenderEntity(window, CameraDelta);
+        Town->RenderEntity(window);
         Town->EntityLogic(DeltaTime, &Projectiles, Soldiers);
+        if (Town->Health<=0)
+        {
+            //this is how you lose
+            exit(0);
+        }
         
 
         for (Building* i: Buildings)
         {
             AimAtNearestEnemy(i);
             i->EntityLogic(DeltaTime, &Projectiles, Soldiers);
-            i->RenderEntity(window,CameraDelta);
+            i->RenderEntity(window);
+            if (i->Health<=0)
+            {
+                Building* tmp = i;
+                i = nullptr;
+                Buildings.erase(std::remove(Buildings.begin(), Buildings.end(), i), Buildings.end());
+                delete tmp;
+            }
            
         }
         for(Building* i: Mines)
         {
-            i->RenderEntity(window,CameraDelta);
+            i->RenderEntity(window);
         }
 
 
@@ -247,17 +336,43 @@ void GameInstance::GameLoop()
         //render enemies
         for(Soldier* i : Soldiers)
         {
-            
+            if (i->Target == nullptr)
+            {
+                //there is no target building so set it
+                FindBuildingtoAttack(i);
+            }
             i->EntityLogic(DeltaTime);
-            i->RenderEntity(window, CameraDelta);
+            i->RenderEntity(window);
+
         }
        
+        
+
         for(Projectile* i: Projectiles)
         {
+           
             i->EntityLogic(DeltaTime);
-            i->RenderEntity(window, CameraDelta);
+              
+            
+            i->RenderEntity(window);
+            //might want to move this to own function
+            if (i->RemainingTime < 0)//delete because old
+            {
+                ProjectileRemovals.push_back(i);
+                continue;
+            }
             ProjectileCollision(i);
+            
+ 
         }
+
+        for (Projectile* i: ProjectileRemovals)
+        {
+            Projectile* tmp = i;
+            Projectiles.erase(std::remove(Projectiles.begin(), Projectiles.end(), i), Projectiles.end());
+            delete tmp;
+        }
+        ProjectileRemovals.clear();
 
 
 
@@ -287,7 +402,7 @@ void GameInstance::GameLoop()
         t2 = std::chrono::high_resolution_clock::now();
         ms_double = t2 - t1;
         DeltaTime = ms_double.count() / 1000;
-
+        TotalTime += DeltaTime;
 
         
         
@@ -304,6 +419,7 @@ GameInstance::GameInstance()
     srand(std::time(0));
    //LoadAll anims
     Anim::LoadAllAnims();
+    SoundData::LoadAllSounds();
    
 
     config = getConfiguration();
@@ -316,7 +432,7 @@ GameInstance::GameInstance()
 
     Town = new TownCentre();
     //tmp
-    Soldiers.push_back(new Soldier("Soldiers/grunt",sf::Vector2f(500,300),Town));
+    Soldiers.push_back(new Soldier("Grunt",sf::Vector2f(500,300),Town));
     
     UI = new HUD();
 

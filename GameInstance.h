@@ -15,12 +15,14 @@ public:
 
 	int Gold = 500;
 private:
+	float TotalTime = 0;
+
+
 	sf::RenderWindow* window;
 	
 	Terrain* TerrainData;
 	sf::Vector2f CameraLocation;
 	sf::Vector2f CameraDelta;
-	void CameraMovement(double DeltaTime);
 
 
 	TownCentre* Town;
@@ -29,6 +31,7 @@ private:
 	std::vector<Building*> Mines;
 	std::vector<Soldier*> Soldiers;
 	std::vector<Projectile*> Projectiles;
+	std::vector<Projectile*> ProjectileRemovals;
 
 
 	HUD* UI;
@@ -52,6 +55,9 @@ private:
 
 
 	void ProjectileCollision(Projectile* inst);
+
+	
+	void FindBuildingtoAttack(Soldier* inst);
 
 	void SpawnEnemies();
 

@@ -67,6 +67,8 @@ sf::Texture* AnimationData::GetFrame(std::string State, int Frame)
 		}
 		return IdleSeq.at(0);
 	}
+
+	
 }
 
 

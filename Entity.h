@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "SoundData.h"
 
 
 class Entity
@@ -13,7 +14,7 @@ class Entity
 public:
 	
 	virtual void EntityLogic(double DeltaTime);
-	void RenderEntity(sf::RenderWindow* window, sf::Vector2f Camera);
+	void RenderEntity(sf::RenderWindow* window);
 	void AttackEntity(Entity* ATarget);
 	Entity(std::string inName);
 
@@ -26,6 +27,7 @@ public:
 	std::string Name;
 
 	std::vector<Component*> Components;
+	std::map<std::string, SoundComponent*> AudioComponents; 
 	
 
 	float DistanceTo(Entity* other);

@@ -7,13 +7,13 @@ class Projectile : public Entity
 	
 	float Speed;
 	
-	float RemainingTime;
+	
 	sf::Vector2f Direction;
 public:
-	Projectile(float SpeedT, int DamageT, float TimeT, sf::Vector2f DirectionT);
+	Projectile(float SpeedT, int DamageT, float TimeT, sf::Vector2f DirectionT, std::string type);
 	void Run(double DeltaTime);
 	int Damage;
 	void EntityLogic(double DeltaTime);
-	
+	float RemainingTime;
 };
 

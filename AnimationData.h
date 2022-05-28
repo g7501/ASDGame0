@@ -13,7 +13,7 @@ public:
 	AnimationData(std::string name, bool isDir);
 	sf::Texture* GetDefaultFrame();
 	sf::Texture* GetFrame(std::string State, int Frame);
-
+	
 };
 
 
