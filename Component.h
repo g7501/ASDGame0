@@ -20,9 +20,12 @@ public:
 	Component(std::string inName);
 	
 	std::string CurrentAnimState = "Idle";
-	int CurrentAnimFrame;
+	int CurrentAnimFrame = 0;
+	double FPSCountDown = 0;
 
-	void RenderComponent(sf::RenderWindow* window, sf::Vector2f RenderPosition);
+	AnimationData* AnimData;
+
+	void RenderComponent(sf::RenderWindow* window, sf::Vector2f RenderPosition, double DeltaTime);
 	
 };
 

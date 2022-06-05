@@ -83,3 +83,9 @@ Soldier::Soldier(std::string inName, sf::Vector2f SpawnLocation, Entity* inTarge
 
 	Components.push_back(new Component(inName));
 }
+
+Soldier::~Soldier()
+{
+	Entity::StaticEntities.push_back(new DecayEntity(Name+"Corpse",2,Loc));
+
+}

@@ -31,3 +31,14 @@ void Camera::CameraMovement(double DeltaTime)
 
     Camera::Location += Camera::Delta*(1/Zoom);
 }
+
+float Camera::GetDistance(sf::Vector2f a, sf::Vector2f b)
+{
+    float x = a.x - b.x;
+    float y = a.y - b.y;
+    float d = x * x + y * y;
+
+
+
+    return pow(d,0.5);
+}

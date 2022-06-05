@@ -1,6 +1,10 @@
 #include <chrono>
 #include "GameInstance.h"
-#include <stdlib.h>         
+#include <stdlib.h>
+
+
+
+
 
 
 
@@ -11,7 +15,7 @@ void GameInstance::GoldCalulation(double DeltaTime)
     {
         SecondTimer = 1;
         //tc money
-        Gold += 5*(1+Mines.size());
+        Gold += 5*(1+ GameData::Mines.size());
     }
     else
     {
@@ -37,8 +41,6 @@ void GameInstance::SetObjectToMage()
     CurrentPlaceObject = "Mage";
 }
 
-
-
 //Also does the mouse
 void GameInstance::HandleButtons(double DeltaTime)
 {
@@ -61,26 +63,59 @@ void GameInstance::HandleButtons(double DeltaTime)
         }
         else
         {
-            if (CurrentPlaceObject!="")
+
+            //upgrade
+            if ((Building::GetIndexOfHoveredTower(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))!=-1)
+            {
+                sf::Vector2i bLocT = (sf::Vector2i)GameData::Buildings.at(Building::GetIndexOfHoveredTower(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))->Loc;
+               CurrentUpgrade = new FieldButton(bLocT,bLocT+sf::Vector2i(128,128), "UpgradeButton.png", 80);
+            }
+
+
+
+            else if (CurrentPlaceObject!="")
             {
                 
-                if(CurrentPlaceObject=="StandardTower" && Gold>=100)
+                if(CurrentPlaceObject=="StandardTower")
                 {
-                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom-Camera::Location));
-                    Gold -= 100;
-                }
-                if (CurrentPlaceObject == "Mine" && Gold >= 150)
-                {
-                    Mines.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
-                    Gold -= 150;
+                    if (Gold >= 100 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))
+                    {
+                        GameData::Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
+                        Gold -= 100;
+                        CurrentPlaceObject = "";
+                    }
+                    else
+                    {
+                        //play sound here
+                    }
+
                 }
 
-                if (CurrentPlaceObject == "Mage" && Gold >= 150)
+
+
+                //can only build mines on dirt
+                if (CurrentPlaceObject == "Mine")
                 {
-                    Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
-                    Gold -= 150;
+                    if (Gold >= 150 && Terrain::GetGroundTypeAtMouse() == GroundType::Dirt1 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))
+                    {
+                        GameData::Mines.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
+                        Gold -= 150;
+                        CurrentPlaceObject = "";
+                    }
                 }
+
+                if (CurrentPlaceObject == "Mage")
+                {
+                    if (Gold >= 150 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))
+                    {
+                        GameData::Buildings.push_back(new Building(CurrentPlaceObject, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location));
+                        Gold -= 150;
+                        CurrentPlaceObject = "";
+                    }
+                }
+                
             }
+
         }
 
     }
@@ -111,9 +146,14 @@ void GameInstance::AimAtNearestEnemy(Building* inst)
         inst->AimingDirection = sf::Vector2f(0,0);
         return;
     }
-    inst->AimingDirection = inst->FindLookAtVector(Nearest);
-
-
+    if (inst->DistanceTo(Nearest)<inst->Range)
+    {
+        inst->AimingDirection = inst->FindLookAtVector(Nearest);
+    }
+    else
+    {
+        inst->AimingDirection = sf::Vector2f(0, 0);
+    }
 
 
 }
@@ -147,16 +187,14 @@ void GameInstance::ProjectileCollision(Projectile* inst)
     }
 }
 
-
-
 void GameInstance::FindBuildingtoAttack(Soldier* inst)
 {
     if (inst->Name=="Raider")
     {
         //might want to make this a little more verbose
-        if (Mines.size()>0)
+        if (GameData::Mines.size()>0)
         {
-            inst->Target = Mines.at(rand()%Mines.size());
+            inst->Target = GameData::Mines.at(rand()% GameData::Mines.size());
         }
         else
         {
@@ -167,9 +205,9 @@ void GameInstance::FindBuildingtoAttack(Soldier* inst)
     if (inst->Name == "Knight")
     {
         //might want to make this a little more verbose
-        if (Buildings.size() > 0)
+        if (GameData::Buildings.size() > 0)
         {
-            inst->Target = Buildings.at(rand() % Buildings.size());
+            inst->Target = GameData::Buildings.at(rand() % GameData::Buildings.size());
         }
         else
         {
@@ -189,7 +227,7 @@ void GameInstance::SpawnEnemies()
     
 
 
-    if (Buildings.size()>4)
+    if (GameData::Buildings.size()>4)
     {
         Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
         Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
@@ -197,7 +235,7 @@ void GameInstance::SpawnEnemies()
         Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
     }
 
-    if (Mines.size()>3 || Gold>650)
+    if (GameData::Mines.size()>3 || Gold>650)
     {
         Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
         Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
@@ -218,7 +256,7 @@ void GameInstance::SpawnEnemies()
         Soldiers.push_back(new Soldier("Giant", sf::Vector2f(std::rand() % 4000 - 2000, std::rand() % 4000 - 2000), Town));
     }
 
-    if (Mines.size()>6 && TotalTime>45)
+    if (GameData::Mines.size()>6 && TotalTime>45)
     {
         Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
         Soldiers.push_back(new Soldier("Raider", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
@@ -238,7 +276,7 @@ void GameInstance::SpawnEnemies()
         Soldiers.push_back(new Soldier("Knight", sf::Vector2f(std::rand() % 3000 - 1500, std::rand() % 3000 - 1500), nullptr));
     }
 
-    if(Buildings.size() > 8)
+    if(GameData::Buildings.size() > 8)
     {
         Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
         Soldiers.push_back(new Soldier("Grunt", sf::Vector2f(std::rand() % 2000 - 1000, std::rand() % 2000 - 1000), Town));
@@ -251,6 +289,66 @@ void GameInstance::SpawnEnemies()
     
 }
 
+void GameInstance::SaveGame()
+{
+    std::ofstream save("Save.cssave");
+    save.write((char*)&TotalTime, 4);
+    save.write((char*)&Gold,4);
+    save.write((char*)&Camera::Location,8);
+    save.write((char*)&Camera::Zoom, 4);
+    save.write((char*)&Town->Health, 4);
+    int tmp = GameData::Buildings.size();
+    save.write((char*)&tmp,4);
+
+    for(Building* i: GameData::Buildings)
+    {
+        save.write((char*)&i->Health,4);
+        save.write((char*)&i->Loc.x,4);
+        save.write((char*)&i->Loc.y, 4);
+    }
+    tmp = GameData::Mines.size();
+    save.write((char*)&tmp, 4);
+    for (Building* i : GameData::Mines)
+    {
+        save.write((char*)&i->Health, 4);
+        save.write((char*)&i->Loc.x, 4);
+        save.write((char*)&i->Loc.y, 4);
+    }
+
+    tmp = GameData::Soldiers.size();
+    save.write((char*)&tmp, 4);
+    for(Soldier* i: GameData::Soldiers)
+    {
+        save.write(i->Name.c_str(), i->Name.size());
+        save.write((char*)& i->Health, 4);
+        save.write((char*)& i->Loc, 8);
+    }
+
+    tmp = GameData::Projectiles.size();
+    save.write((char*)&tmp, 4);
+    for (Projectile* i: GameData::Projectiles)
+    {
+        save.write(i->Name.c_str(), i->Name.size());
+        save.write((char*)&i->Loc,8);
+        save.write((char*)&i->RemainingTime, 4);
+        save.write((char*)&i->Attack, 4);
+    }
+
+    tmp = Entity::StaticEntities.size();
+    save.write((char*)&tmp, 4);
+    for (Entity* i : Entity::StaticEntities)
+    {
+        save.write(i->Name.c_str(), i->Name.size());
+        save.write((char*)&i->Loc, 8);
+        
+    }
+
+
+
+
+
+    save.close();
+}
 
 void GameInstance::GameLoop()
 {
@@ -287,6 +385,14 @@ void GameInstance::GameLoop()
                     Camera::Zoom = 2;
                 }
             }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                //temp
+                if (event.key.code == sf::Keyboard::Num1)
+                {
+                    SaveGame();
+                }
+            }
         }
 
 
@@ -303,8 +409,8 @@ void GameInstance::GameLoop()
         //render buildings
         
         AimAtNearestEnemy(Town);
-        Town->RenderEntity(window);
-        Town->EntityLogic(DeltaTime, &Projectiles, Soldiers);
+        Town->RenderEntity(window,DeltaTime);
+        Town->EntityLogic(DeltaTime, &GameData::Projectiles, Soldiers);
         if (Town->Health<=0)
         {
             //this is how you lose
@@ -312,26 +418,59 @@ void GameInstance::GameLoop()
         }
         
 
-        for (Building* i: Buildings)
+        for (Entity* i : Entity::StaticEntities)
+        {
+            if ((DecayEntity*)i)
+            {
+                DecayEntity* tmpDE = (DecayEntity*)i;
+                tmpDE->RenderEntity(window, DeltaTime);
+            }
+            else
+            {
+                i->RenderEntity(window, DeltaTime);
+            }
+            
+        }
+        Entity::CleanStatics();
+
+
+        for (Building* i: GameData::Buildings)
         {
             AimAtNearestEnemy(i);
-            i->EntityLogic(DeltaTime, &Projectiles, Soldiers);
-            i->RenderEntity(window);
+            i->EntityLogic(DeltaTime, &GameData::Projectiles, Soldiers);
+            i->RenderEntity(window, DeltaTime);
             if (i->Health<=0)
             {
-                Building* tmp = i;
-                i = nullptr;
-                Buildings.erase(std::remove(Buildings.begin(), Buildings.end(), i), Buildings.end());
-                delete tmp;
+                BuildingsRemovals.push_back(i);
+                continue;
             }
            
         }
-        for(Building* i: Mines)
+        for (Building* i : BuildingsRemovals)
         {
-            i->RenderEntity(window);
+            Building* tmp = i;
+            GameData::Buildings.erase(std::remove(GameData::Buildings.begin(), GameData::Buildings.end(), i), GameData::Buildings.end());
+            delete tmp;
+        }
+        BuildingsRemovals.clear();
+
+        for(Building* i: GameData::Mines)
+        {
+            i->RenderEntity(window, DeltaTime);
+            if (i->Health <= 0)
+            {
+                MineRemovals.push_back(i);
+                continue;
+            }
         }
 
-
+        for (Building* i: MineRemovals)
+        {
+            Building* tmp = i;
+            GameData::Mines.erase(std::remove(GameData::Mines.begin(), GameData::Mines.end(), i), GameData::Mines.end());
+            delete tmp;
+        }
+        MineRemovals.clear();
 
         //render enemies
         for(Soldier* i : Soldiers)
@@ -342,19 +481,22 @@ void GameInstance::GameLoop()
                 FindBuildingtoAttack(i);
             }
             i->EntityLogic(DeltaTime);
-            i->RenderEntity(window);
+            i->RenderEntity(window, DeltaTime);
 
         }
        
-        
 
-        for(Projectile* i: Projectiles)
+
+
+
+
+        for(Projectile* i: GameData::Projectiles)
         {
            
             i->EntityLogic(DeltaTime);
               
             
-            i->RenderEntity(window);
+            i->RenderEntity(window, DeltaTime);
             //might want to move this to own function
             if (i->RemainingTime < 0)//delete because old
             {
@@ -369,10 +511,12 @@ void GameInstance::GameLoop()
         for (Projectile* i: ProjectileRemovals)
         {
             Projectile* tmp = i;
-            Projectiles.erase(std::remove(Projectiles.begin(), Projectiles.end(), i), Projectiles.end());
+            GameData::Projectiles.erase(std::remove(GameData::Projectiles.begin(), GameData::Projectiles.end(), i), GameData::Projectiles.end());
             delete tmp;
         }
         ProjectileRemovals.clear();
+
+
 
 
 
@@ -380,6 +524,13 @@ void GameInstance::GameLoop()
         GoldCalulation(DeltaTime);
         //last to render is the UI
         
+        if (CurrentUpgrade!=nullptr)
+        {
+            CurrentUpgrade->Render(window);
+            
+        }
+        
+
 
         HandleButtons(DeltaTime);
         UI->Render(window, Gold);
@@ -410,16 +561,12 @@ void GameInstance::GameLoop()
 
 }
 
-
-
-
 GameInstance::GameInstance()
 {
 
     srand(std::time(0));
    //LoadAll anims
-    Anim::LoadAllAnims();
-    SoundData::LoadAllSounds();
+
    
 
     config = getConfiguration();
@@ -442,5 +589,3 @@ GameInstance::GameInstance()
     
 
 }
-
-

@@ -7,10 +7,12 @@ void HUD::Render(sf::RenderWindow* window, int money)
 	MoneyTest.setString("Gold: "+std::to_string(money));
 	window->draw(MoneyTest);
 	window->draw(BaseSprite);
-	window->draw(StandardTower);
-	window->draw(Mine);
-	window->draw(Mage);
-
+	//window->draw(StandardTower);
+	//window->draw(Mine);
+	//window->draw(Mage);
+	StandardTowerButton.Render(window);
+	MineButton.Render(window);
+	MageButton.Render(window);
 
 }
 
@@ -18,7 +20,7 @@ void HUD::Render(sf::RenderWindow* window, int money)
 
 
 
-
+sf::Font* Button::GenericFont;
 
 HUD::HUD()
 {
@@ -32,6 +34,7 @@ HUD::HUD()
 	{
 		// error...
 	}
+	Button::GenericFont = font;
 
 	MoneyTest.setFont(*font);
 	MoneyTest.setPosition(((float)Config.ScreenX)/100, ((float)Config.ScreenY) / 100);
@@ -79,9 +82,9 @@ HUD::HUD()
 	Mage.setScale(ScaleX,ScaleY);
 
 
-	StandardTowerButton.SetLoc(0,Config.ScreenY-ScaleY*200,ScaleX*600,Config.ScreenY);
-	MineButton.SetLoc(600, Config.ScreenY - ScaleY * 200, ScaleX * 600 + 600, Config.ScreenY);
-	MageButton.SetLoc(1200, Config.ScreenY - ScaleY * 200, ScaleX * 600 + 1200, Config.ScreenY);
+	//StandardTowerButton.SetLoc(0,Config.ScreenY-ScaleY*200,ScaleX*600,Config.ScreenY);
+	//MineButton.SetLoc(600, Config.ScreenY - ScaleY * 200, ScaleX * 600 + 600, Config.ScreenY);
+	//MageButton.SetLoc(1200, Config.ScreenY - ScaleY * 200, ScaleX * 600 + 1200, Config.ScreenY);
 	
 
 }

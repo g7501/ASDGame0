@@ -2,9 +2,15 @@
 #include <vector>
 #include "StandardIO.h"
 #include "Terrain.h"
-#include "TownCentre.h"
-#include "Soldier.h"
 #include "HUD.h"
+#include "GameData.h"
+#include "TownCentre.h"
+
+
+
+
+
+
 
 class GameInstance
 {
@@ -27,11 +33,17 @@ private:
 
 	TownCentre* Town;
 	
-	std::vector<Building*> Buildings;
-	std::vector<Building*> Mines;
+	//std::vector<Building*> Buildings;
+	std::vector<Building*> BuildingsRemovals;
+	//std::vector<Building*> Mines;
+	std::vector<Building*> MineRemovals;
 	std::vector<Soldier*> Soldiers;
-	std::vector<Projectile*> Projectiles;
+	//std::vector<Projectile*> Projectiles;
 	std::vector<Projectile*> ProjectileRemovals;
+
+	
+
+	FieldButton* CurrentUpgrade;
 
 
 	HUD* UI;
@@ -63,5 +75,8 @@ private:
 
 
 	float EnemySpawnCountDown = 6;
+
+
+	void SaveGame();
 };
 

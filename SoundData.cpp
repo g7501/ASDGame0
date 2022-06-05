@@ -33,7 +33,20 @@ SoundComponent::SoundComponent(std::string inName)
 	Audio.setBuffer(SoundData->sound);
 }
 
+float Distance(sf::Vector2f a, sf::Vector2f b)
+{
+	float x = pow(a.x-b.x,2);
+	float y = pow(a.y-b.y,2);
+	return pow(x+y,0.5);
+}
+
+
 void SoundComponent::AudioLogic(sf::Vector2f AudioLocation)
 {
-	Audio.setVolume(SoundData->Volume*Camera::Zoom);
+	if (SoundData->isAttenuated)
+	{
+		float dist = SoundData->AttenuationRadius / Distance(AudioLocation, Camera::Location);
+		Audio.setVolume(SoundData->Volume * pow(Camera::Zoom, 1.5) * dist);
+	}
+
 }

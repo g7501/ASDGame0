@@ -3,7 +3,7 @@
 
 enum GroundType
 {
-	Grass1,Grass2,Dirt1,Water
+	Grass1,Grass2,Dirt1,Water,Invalid
 };
 
 
@@ -15,8 +15,7 @@ struct SpriteLoc
 
 class Terrain
 {
-	int mapX, mapY;
-	GroundType* TerrainData;
+
 	SpriteLoc* TerrainSprites;
 	std::vector<SpriteLoc*> EdgeSprites;
 	sf::Texture Grass1;
@@ -28,10 +27,17 @@ class Terrain
 	sf::Texture Beach;
 	void CreateBlankMap();
 
+	static int GridSize;
+
 public:
 	Terrain();
 	void RenderTerrain(sf::RenderWindow* window);
 	void LoadMap(std::string name);
+
+	static int mapX, mapY;
+	static GroundType* TerrainData;
+
+	static GroundType GetGroundTypeAtMouse();
 
 };
 

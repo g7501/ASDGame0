@@ -8,5 +8,7 @@ struct Camera
 	static float Zoom;
 
 	static void CameraMovement(double DeltaTime);
+
+	static float GetDistance(sf::Vector2f a, sf::Vector2f b);
 };
 

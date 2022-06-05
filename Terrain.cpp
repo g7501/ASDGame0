@@ -2,6 +2,12 @@
 #include <iostream>
 
 
+int Terrain::mapX;
+int Terrain::mapY;
+GroundType* Terrain::TerrainData;
+int Terrain::GridSize = 128;
+
+
 //might want to refactor this so it only uses the bare minimum number of sprites
 void Terrain::CreateBlankMap()
 {
@@ -69,13 +75,16 @@ void Terrain::RenderTerrain(sf::RenderWindow* window)
 	
 	
 	sf::Vector2f LocalPosition;
-	for (size_t i = 0; i < mapX*mapY; i++)
+
+
+	for (int i = mapX*mapY - 1; i >= 0; i--)
 	{
-		LocalPosition = (TerrainSprites[i].l+Camera::Location)*Camera::Zoom;
-		TerrainSprites[i].s.setScale(Camera::Zoom,Camera::Zoom);
+		LocalPosition = (TerrainSprites[i].l + Camera::Location) * Camera::Zoom;
+		TerrainSprites[i].s.setScale(Camera::Zoom, Camera::Zoom);
 		TerrainSprites[i].s.setPosition(LocalPosition);
 		window->draw(TerrainSprites[i].s);
 	}
+
 	for (SpriteLoc* i: EdgeSprites)
 	{
 		LocalPosition = (i->l + Camera::Location)*Camera::Zoom;
@@ -121,10 +130,9 @@ void Terrain::LoadMap(std::string name)
 			TerrainData[i] = GroundType::Dirt1;
 			TerrainSprites[i].s.setTexture(Dirt1);
 		}
-		//SpriteLocation[i] = sf::Vector2f(tmp / mapY * 128 - 64 * mapY, tmp % mapY * 128 - 64 * mapX);
-		//TerrainSprites[i].setPosition(SpriteLocation[i]);
 
-		TerrainSprites[i].l = sf::Vector2f(tmp / mapY * 128 - 64 * mapY, tmp % mapY * 128 - 64 * mapX);
+
+		TerrainSprites[i].l = sf::Vector2f(tmp % mapY * 128 - 64 * mapX, tmp / mapY * 128 - 64 * mapY);
 
 		//now for the edges
 		if (i-1>0)
@@ -144,6 +152,24 @@ void Terrain::LoadMap(std::string name)
 		
 	}
 
-	//test
+	
 
+}
+
+GroundType Terrain::GetGroundTypeAtMouse()
+{
+	sf::Vector2f Location = (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location;
+	//just need to divide by 128 now
+	Location /= (float)GridSize;
+	int x = trunc(Location.x+mapX/2); //using trunc to be safe
+	int y = trunc(Location.y+mapY/2);
+	int idx = y*mapX + x;
+
+	std::cout << x << "  " << y << std::endl;
+	if (idx>=mapX*mapY)
+	{
+		return GroundType::Invalid;
+	}
+	
+	return TerrainData[idx];
 }

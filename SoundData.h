@@ -7,8 +7,8 @@ struct Sound
 	sf::SoundBuffer sound;
 	float Volume = 100;
 	std::string Subtitle; //might be used for some stuff
-	bool isAttenuated = false; // does the sound have a specific place that it is played
-	float AttenuationRadius; //length before sound becomes unaudible
+	bool isAttenuated = true; // does the sound have a specific place that it is played
+	float AttenuationRadius= 200; //length before sound becomes unaudible
 
 	Sound(std::string name);
 };
@@ -22,6 +22,7 @@ public:
 	sf::Sound Audio;
 	SoundComponent(std::string inName);
 	void AudioLogic(sf::Vector2f AudioLocation);
+	
 };
 
 

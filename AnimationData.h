@@ -10,9 +10,17 @@ class AnimationData
 public:
 	bool isStatic = false;
 	std::string AssetPath;
+	float FPS = 30;
+	float Scale = 1;
+	float RelativeX = 0;
+	float RelativeY = 0;
+
 	AnimationData(std::string name, bool isDir);
+	AnimationData(std::string name);
 	sf::Texture* GetDefaultFrame();
 	sf::Texture* GetFrame(std::string State, int Frame);
+	int GetLengthOfCurrentAnim(std::string State);
+
 	
 };
 

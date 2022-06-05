@@ -8,7 +8,9 @@ struct ConfigData
 {
 	int ScreenX;
 	int ScreenY;
+	int Choice;
 };
 
 //Reads the config data
 ConfigData getConfiguration();
+
