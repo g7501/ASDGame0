@@ -5,8 +5,6 @@
 
 Building::Building(std::string inName, sf::Vector2f Loc) : Entity(inName)
 {
-	
-	
 	size = 50;
 	
 	if (inName=="StandardTower")
@@ -159,11 +157,8 @@ BuildingData::BuildingData(std::string file)
 	
 	int version; //probably add an if here
 	ifs.read((char*)&version,4);
-	std::cout << ifs.tellg() << std::endl;
 	ReadString(&ifs);
-	std::cout << ifs.tellg() << std::endl;
 	ifs.read((char*)&Health, 4);
-	std::cout << ifs.tellg() << std::endl;
 	ifs.read((char*)&PDamage, 4);
 	ifs.read((char*)&PTimeGap, 4);
 	ifs.read((char*)&size, 4);

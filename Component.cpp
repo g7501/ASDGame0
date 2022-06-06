@@ -5,6 +5,7 @@ Component::Component(std::string inName)
 {
 	if (Anim::Animations.contains(inName))
 	{
+		
 		Visual.setTexture(*Anim::Animations.at(inName)->GetDefaultFrame());
 		Scale = sf::Vector2f(1, 1);
 		RelativeLocation = sf::Vector2f(0, 0);

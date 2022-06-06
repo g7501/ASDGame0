@@ -165,7 +165,6 @@ GroundType Terrain::GetGroundTypeAtMouse()
 	int y = trunc(Location.y+mapY/2);
 	int idx = y*mapX + x;
 
-	std::cout << x << "  " << y << std::endl;
 	if (idx>=mapX*mapY)
 	{
 		return GroundType::Invalid;

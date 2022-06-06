@@ -34,7 +34,7 @@ int main()
 		Building::LoadAllBuildings();
 
 		GameInstance* Game = new GameInstance();
-		//load the game data
+		Game->LoadGame();
 		Game->GameLoop();
 
 	}

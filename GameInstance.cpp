@@ -302,50 +302,173 @@ void GameInstance::SaveGame()
 
     for(Building* i: GameData::Buildings)
     {
-        save.write((char*)&i->Health,4);
-        save.write((char*)&i->Loc.x,4);
+        uint8_t sLen = i->Name.size();
+        save.write((char*)&sLen,1);
+        save.write(i->Name.c_str(), i->Name.size());
+        save.write((char*)&i->Loc.x, 4);
         save.write((char*)&i->Loc.y, 4);
+        save.write((char*)&i->Health,4);
+
     }
     tmp = GameData::Mines.size();
     save.write((char*)&tmp, 4);
     for (Building* i : GameData::Mines)
     {
-        save.write((char*)&i->Health, 4);
         save.write((char*)&i->Loc.x, 4);
         save.write((char*)&i->Loc.y, 4);
+        save.write((char*)&i->Health, 4);
     }
 
     tmp = GameData::Soldiers.size();
     save.write((char*)&tmp, 4);
     for(Soldier* i: GameData::Soldiers)
     {
+        uint8_t sLen = i->Name.size();
+        save.write((char*)&sLen, 1);
         save.write(i->Name.c_str(), i->Name.size());
-        save.write((char*)& i->Health, 4);
-        save.write((char*)& i->Loc, 8);
+        save.write((char*)& i->Loc.x, 4);
+        save.write((char*)&i->Loc.y, 4);
+        save.write((char*)&i->Health, 4);
     }
 
     tmp = GameData::Projectiles.size();
     save.write((char*)&tmp, 4);
     for (Projectile* i: GameData::Projectiles)
     {
+        uint8_t sLen = i->Name.size();
+        save.write((char*)&sLen, 1);
         save.write(i->Name.c_str(), i->Name.size());
-        save.write((char*)&i->Loc,8);
+        save.write((char*)&i->Loc.x,4);
+        save.write((char*)&i->Loc.y, 4);
         save.write((char*)&i->RemainingTime, 4);
         save.write((char*)&i->Attack, 4);
+        save.write((char*)&i->Speed,4);
+        save.write((char*)&i->Direction.x, 4);
+        save.write((char*)&i->Direction.y, 4);
     }
 
     tmp = Entity::StaticEntities.size();
     save.write((char*)&tmp, 4);
     for (Entity* i : Entity::StaticEntities)
     {
+        uint8_t sLen = i->Name.size();
+        save.write((char*)&sLen, 1);
         save.write(i->Name.c_str(), i->Name.size());
         save.write((char*)&i->Loc, 8);
         
     }
 
+    save.close();
+}
+
+void GameInstance::LoadGame()
+{
+    std::ifstream save("save.cssave");
+    save.read((char*)&TotalTime, 4);
+    save.read((char*)&Gold,4);
+    save.read((char*)&Camera::Location,8);
+    save.read((char*)&Camera::Zoom, 4);
+    save.read((char*)&Town->Health, 4);
+
+    //buildings
+    int tmpSize;
+    save.read((char*)&tmpSize, 4);
+    for (size_t i = 0; i < tmpSize; i++)
+    {
+        uint8_t sLen;
+        save.read((char*)&sLen,1);
+        char* tmpString = new char[sLen];
+        save.read(tmpString,sLen);
+        std::string tStr;
+        tStr = tmpString;
+        tStr = tStr.substr(0,sLen);
+
+        sf::Vector2f Loc;
+        save.read((char*)&Loc.x,4);
+        save.read((char*)&Loc.y, 4);
+        GameData::Buildings.push_back(new Building(tStr,Loc)); //check to make sure strings are working correctly
+        save.read((char*) & GameData::Buildings.back()->Health,4);
+    }
+
+    save.read((char*)&tmpSize,4);
+    for (size_t i = 0; i < tmpSize; i++)
+    {
+        sf::Vector2f Loc;
+        save.read((char*)&Loc.x, 4);
+        save.read((char*)&Loc.y, 4);
+        GameData::Mines.push_back(new Building("Mine",Loc));
+        save.read((char*)&GameData::Mines.back()->Health,4);
+    }
+
+    save.read((char*)&tmpSize, 4);
+    for (size_t i = 0; i < tmpSize; i++)
+    {
+        uint8_t sLen;
+        save.read((char*)&sLen, 1);
+        char* tmpString = new char[sLen];
+        save.read(tmpString, sLen);
+        std::string tStr;
+        tStr = tmpString;
+        tStr = tStr.substr(0, sLen);
+
+        sf::Vector2f Loc;
+        save.read((char*)&Loc.x,4);
+        save.read((char*)&Loc.y, 4);
+        GameData::Soldiers.push_back(new Soldier(tStr,Loc,nullptr)); //this nullptr might cause problems but I'll just fix them
+        save.read((char*) & GameData::Soldiers.back()->Health, 4);
+    }
+
+    save.read((char*)&tmpSize, 4);
+    for (size_t i = 0; i < tmpSize; i++)
+    {
+        uint8_t sLen;
+        save.read((char*)&sLen, 1);
+        char* tmpString = new char[sLen];
+        save.read(tmpString, sLen);
+        std::string tStr;
+        tStr = tmpString;
+        tStr = tStr.substr(0, sLen);
+
+        sf::Vector2f Loc;
+        save.read((char*)&Loc.x, 4);
+        save.read((char*)&Loc.y, 4);
+
+        float rTime;
+        save.read((char*)&rTime,4);
+
+        float attack;
+        save.read((char*)&attack,4);
+
+        float speed;
+        save.read((char*)&speed,4);
+
+        sf::Vector2f Dir;
+        save.read((char*)&Dir.x, 4);
+        save.read((char*)&Dir.y, 4);
+
+        GameData::Projectiles.push_back(new Projectile(speed,attack,rTime,Dir,tStr));
+        GameData::Projectiles.back()->Loc = Loc;
+    }
+
+    save.read((char*)&tmpSize, 4);
+    for (size_t i = 0; i < tmpSize; i++)
+    {
+        uint8_t sLen;
+        save.read((char*)&sLen, 1);
+        char* tmpString = new char[sLen];
+        save.read(tmpString, sLen);
+        std::string tStr;
+        tStr = tmpString;
+        tStr = tStr.substr(0, sLen);
+
+        sf::Vector2f Loc;
+        save.read((char*)&Loc.x, 4);
+        save.read((char*)&Loc.y, 4);
 
 
+        Entity::StaticEntities.push_back(new DecayEntity(tStr,1,Loc));
 
+    }
 
     save.close();
 }

@@ -17,6 +17,7 @@ class GameInstance
 public:
 	GameInstance();
 	void GameLoop();
+	void LoadGame();
 	ConfigData config;
 
 	int Gold = 500;
@@ -78,5 +79,7 @@ private:
 
 
 	void SaveGame();
+
+
 };
 
