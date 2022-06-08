@@ -3,10 +3,53 @@
 #include <filesystem>
 #include <fstream>
 
+Building::Building(std::string buildingName, std::string componentName, std::string buildingType, int damage, float speed, float timeExists, float timeGap,
+	float attackDelay, int health, int size, int range, int cost, std::string audioValue, 
+	std::string audioComponent) : Entity(buildingName) {
+	if (!componentName.empty())
+		Components.push_back(new Component(componentName));
+
+	ComponentName = componentName;
+	ProjectileInst.Damage = damage;
+	ProjectileInst.Speed = speed;
+	ProjectileInst.TimeExists = timeExists;
+	ProjectileInst.TimeGap = timeGap;
+	BuildingType = buildingType;
+	AttackDelay = attackDelay;
+	Health = health;
+	Range = range;
+	Cost = cost;
+
+	AudioValue = audioValue;
+	AudioComponent = audioComponent;
+	AudioComponents.emplace(audioValue, new SoundComponent(audioComponent));
+}
+
+Building::Building(Building* building, sf::Vector2f loc) : Entity(building->Name) {
+	if (!building->ComponentName.empty())
+		Components.push_back(new Component(building->ComponentName));
+
+	ProjectileInst.Damage = building->ProjectileInst.Damage;
+	ProjectileInst.Speed = building->ProjectileInst.Speed;
+	ProjectileInst.TimeExists = building->ProjectileInst.TimeExists;
+	ProjectileInst.TimeGap = building->ProjectileInst.TimeGap;
+	BuildingType = building->BuildingType;
+	AttackDelay = building->AttackDelay;
+	Health = building->Health;
+	Range = building->Range;
+	Cost = building->Cost;
+
+	AudioValue = building->AudioValue;
+	AudioComponent = building->AudioComponent;
+	AudioComponents.emplace(building->AudioValue, new SoundComponent(building->AudioComponent));
+
+	this->Loc = loc;
+}
+
 Building::Building(std::string inName, sf::Vector2f Loc) : Entity(inName)
 {
 	size = 50;
-	
+
 	if (inName=="StandardTower")
 	{
 		Components.push_back(new Component("StandardTower"));
@@ -52,15 +95,13 @@ Building::Building(std::string inName, sf::Vector2f Loc) : Entity(inName)
 
 void Building::EntityLogic(double DeltaTime, std::vector<Projectile*>* projectiles, std::vector<Soldier*> Targets)
 {
-	
 	if (CountdownToNextAttack<=0)
 	{
-		
 		CountdownToNextAttack = AttackDelay;
 		if (AimingDirection!=sf::Vector2f(0,0))
 		{
-
-			if (Name == "Mage")
+			if(BuildingType == "Mage")
+			//if (Name == "Mage")
 			{
 				
 				projectiles->push_back(new Projectile(ProjectileInst.Speed, ProjectileInst.Damage, ProjectileInst.TimeExists, AimingDirection, "Magic"));
@@ -72,9 +113,9 @@ void Building::EntityLogic(double DeltaTime, std::vector<Projectile*>* projectil
 				projectiles->push_back(new Projectile(ProjectileInst.Speed, ProjectileInst.Damage, ProjectileInst.TimeExists, AimingDirection,"Magic"));
 				projectiles->back()->Loc = Loc+sf::Vector2f(std::rand() % 20 - 10, std::rand() % 20 - 10);
 			}
-			if (Name == "TownCentre" || Name=="StandardTower")
+			if(BuildingType == "Tower")
+			//if (Name == "TownCentre" || Name=="StandardTower")
 			{
-
 				projectiles->push_back(new Projectile(ProjectileInst.Speed, ProjectileInst.Damage, ProjectileInst.TimeExists, AimingDirection,"Arrow"));
 				projectiles->back()->Loc = Loc;
 				
@@ -135,7 +176,6 @@ void Building::LoadAllBuildings()
 	}
 
 }
-
 
 //put this somewhere else
 std::string ReadString(std::ifstream* inp)

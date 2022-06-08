@@ -34,18 +34,22 @@ struct BuildingData
 	BuildingData(std::string file);
 };
 
-
-
-
 class Building : public Entity
 {
-	
-
 public:
+	Building(std::string buildingName, std::string componentName, std::string buildingType, int damage, float speed, float timeExists, float timeGap,
+		float attackDelay, int health, int size, int range, int cost, std::string audioValue,
+		std::string audioComponent);
+	Building(Building* building, sf::Vector2f loc);
 	Building(std::string inName, sf::Vector2f Loc);
 	void EntityLogic(double DeltaTime, std::vector<Projectile*>* projectiles, std::vector<Soldier*> Targets);
 	ProjectileData ProjectileInst;
 	float Range;
+	std::string ComponentName;
+	std::string BuildingType;
+	std::string AudioValue;
+	std::string AudioComponent;
+	int Cost;
 	sf::Vector2f AimingDirection = sf::Vector2f(0,0);
 	float UsingTerrain = 50;
 

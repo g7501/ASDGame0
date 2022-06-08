@@ -1,13 +1,7 @@
 #include <chrono>
 #include "GameInstance.h"
 #include <stdlib.h>
-
-
-
-
-
-
-
+#include "BuildingManager.h"
 
 void GameInstance::GoldCalulation(double DeltaTime)
 {
@@ -44,7 +38,12 @@ void GameInstance::SetObjectToMage()
 //Also does the mouse
 void GameInstance::HandleButtons(double DeltaTime)
 {
-    
+    //if (!CurrentPlaceObject.empty()) {
+
+    //}
+
+
+
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && MouseCooldown<=0)
     {
         MouseCooldown = 0.1;
@@ -70,13 +69,28 @@ void GameInstance::HandleButtons(double DeltaTime)
                 sf::Vector2i bLocT = (sf::Vector2i)GameData::Buildings.at(Building::GetIndexOfHoveredTower(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))->Loc;
                CurrentUpgrade = new FieldButton(bLocT,bLocT+sf::Vector2i(128,128), "UpgradeButton.png", 80);
             }
-
-
-
             else if (CurrentPlaceObject!="")
-            {
+{
+                Building* curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);
                 
-                if(CurrentPlaceObject=="StandardTower")
+                if (curBuilding->BuildingType == "Mine") {
+                    if (Gold >= curBuilding->Cost && Terrain::GetGroundTypeAtMouse() == GroundType::Dirt1 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)) {
+                        GameData::Buildings.push_back(new Building(curBuilding, ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)));
+                        Gold -= curBuilding->Cost;
+                        CurrentPlaceObject = "";
+                    }
+                } else {
+                    if (Gold >= curBuilding->Cost && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)) {
+                        GameData::Buildings.push_back(new Building(curBuilding, ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)));
+                        Gold -= curBuilding->Cost;
+                        CurrentPlaceObject = "";
+                    } else {
+                        std::cout << "[DEBUG] Should play audio here..." << std::endl;
+                        //play sound here
+                    }
+                }
+
+                /* if (CurrentPlaceObject == "StandardTower")
                 {
                     if (Gold >= 100 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))
                     {
@@ -112,7 +126,7 @@ void GameInstance::HandleButtons(double DeltaTime)
                         Gold -= 150;
                         CurrentPlaceObject = "";
                     }
-                }
+                }*/
                 
             }
 
@@ -122,9 +136,9 @@ void GameInstance::HandleButtons(double DeltaTime)
     else
     {
         MouseCooldown -= DeltaTime * ! sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
+
     }
-
-
 }
 
 void GameInstance::AimAtNearestEnemy(Building* inst)

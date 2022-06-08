@@ -2,33 +2,28 @@
 #include "MainMenu.h"
 #include <iostream>
 #include "Editor.h"
+#include "BuildingManager.h"
 
-int main()
-{
-	
-
+int main() {
 	int choice = 0;
 	MainMenu* Menu = new MainMenu();
 	choice = Menu->MenuLoop();
-
 
 	//ConfigData conf = getConfiguration();
 
 	//choice = conf.Choice;//temp
 
-
-
-	if (choice == 0)
-	{
+	if (choice == 0) {
 		Anim::LoadAllAnims();
 		SoundData::LoadAllSounds();
 		Building::LoadAllBuildings();
+		getBuildingManager().loadBuildings();
 
 		GameInstance* Game = new GameInstance();
 		Game->GameLoop();
 	}
-	if (choice ==1)
-	{
+
+	if (choice == 1) {
 		Anim::LoadAllAnims();
 		SoundData::LoadAllSounds();
 		Building::LoadAllBuildings();
@@ -36,11 +31,7 @@ int main()
 		GameInstance* Game = new GameInstance();
 		Game->LoadGame();
 		Game->GameLoop();
-
 	}
-
-
-
 
 #ifdef NDEBUG
 
@@ -54,7 +45,5 @@ int main()
 		Editor* editor = new Editor();
 		editor->RunEditor(choice);
 	}
-
 #endif
-
 }
