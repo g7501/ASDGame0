@@ -1,0 +1,74 @@
+{
+    "StandardTower" : {
+        "ComponentName": "StandardTower",
+        "BuildingType": "Tower",
+        "Damage": 15,
+        "Speed": 700,
+        "TimeExists": 4,
+        "TimeGap": 0.65,
+        "AttackDelay": 1,
+        "Health": 125,
+        "Size": 50,
+        "Range": 1200,
+        "Cost": 100,
+        
+        "Audio" : {
+            "Value": "Fire",
+            "SoundComponent": "ArrowFire"
+        }
+    },
+    "TownCentre" : {
+        "ComponentName": "",
+        "BuildingType": "Tower",
+        "Damage": 15,
+        "Speed": 700,
+        "TimeExists": 4,
+        "TimeGap": 0.65,
+        "AttackDelay": 1,
+        "Health": 125,
+        "Size": 50,
+        "Range": 800,
+        "Cost": 100,
+        
+        "Audio" : {
+            "Value": "Fire",
+            "SoundComponent": "ArrowFire"
+        }
+    },
+    "Mine" : {
+        "ComponentName": "Mine",
+        "BuildingType": "Mine",
+        "Damage": 0,
+        "Speed": 0,
+        "TimeExists": 0,
+        "TimeGap": 0,
+        "AttackDelay": 0,
+        "Health": 100,
+        "Size": 50,
+        "Range": 0,
+        "Cost": 150,
+        
+        "Audio" : {
+            "Value": "Fire",
+            "SoundComponent": "ArrowFire"
+        }
+    },
+    "Mage" : {
+        "ComponentName": "MageTower",
+        "BuildingType": "Mage",
+        "Damage": 8,
+        "Speed": 550,
+        "TimeExists": 0.6,
+        "TimeGap": 0.55,
+        "AttackDelay": 0.4,
+        "Health": 75,
+        "Size": 50,
+        "Range": 350,
+        "Cost": 150,
+        
+        "Audio" : {
+            "Value": "Fire",
+            "SoundComponent": "MagicFire"
+        }
+    }
+}
