@@ -12,10 +12,11 @@
         "Range": 1200,
         "Cost": 100,
         
-        "Audio" : {
-            "Value": "Fire",
-            "SoundComponent": "ArrowFire"
-        }
+        "Audios" : {
+			"Fire" : {
+				"SoundComponent": "ArrowFire"
+			}
+		}
     },
     "TownCentre" : {
         "ComponentName": "",
@@ -30,10 +31,11 @@
         "Range": 800,
         "Cost": 100,
         
-        "Audio" : {
-            "Value": "Fire",
-            "SoundComponent": "ArrowFire"
-        }
+        "Audios" : {
+			"Fire" : {
+				"SoundComponent": "ArrowFire"
+			}
+		}
     },
     "Mine" : {
         "ComponentName": "Mine",
@@ -47,11 +49,12 @@
         "Size": 50,
         "Range": 0,
         "Cost": 150,
-        
-        "Audio" : {
-            "Value": "Fire",
-            "SoundComponent": "ArrowFire"
-        }
+
+        "Audios" : {
+			"Fire" : {
+				"SoundComponent": "ArrowFire"
+			}
+		}
     },
     "Mage" : {
         "ComponentName": "MageTower",
@@ -66,9 +69,10 @@
         "Range": 350,
         "Cost": 150,
         
-        "Audio" : {
-            "Value": "Fire",
-            "SoundComponent": "MagicFire"
-        }
+        "Audios" : {
+			"Fire" : {
+				"SoundComponent": "MagicFire"
+			}
+		}
     }
 }
