@@ -66,6 +66,7 @@ Terrain::Terrain()
 	}
 
 
+
 	LoadMap("Default.png");
 
 }
@@ -152,7 +153,7 @@ void Terrain::LoadMap(std::string name)
 		
 	}
 
-	
+
 
 }
 

@@ -10,9 +10,9 @@ public:
 	void RunEditor(int type);
 private:
 	void ParticleEditor();
-	ParticleFX* CurrentFX = new ParticleFX();
+	ParticleFX* CurrentFX = new ParticleFX("test");
 	float FrameTime = 0.01; //runs at a controlled fps
-	bool Running = false;
+	bool Running = true;
 
 	
 

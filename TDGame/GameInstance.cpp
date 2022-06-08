@@ -464,8 +464,7 @@ void GameInstance::LoadGame()
         sf::Vector2f Loc;
         save.read((char*)&Loc.x, 4);
         save.read((char*)&Loc.y, 4);
-
-
+        
         Entity::StaticEntities.push_back(new DecayEntity(tStr,1,Loc));
 
     }
