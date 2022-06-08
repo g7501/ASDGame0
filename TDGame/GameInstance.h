@@ -18,12 +18,14 @@ public:
 	GameInstance();
 	void GameLoop();
 	void LoadGame();
+	void RenderEntity(Entity* entity);
 	ConfigData config;
 
 	int Gold = 500;
+	Building* curBuilding;
 private:
 	float TotalTime = 0;
-
+	double DeltaTime = 0;
 
 	sf::RenderWindow* window;
 	

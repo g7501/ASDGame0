@@ -50,19 +50,20 @@ void GameInstance::HandleButtons(double DeltaTime)
         if (UI->StandardTowerButton.CallIfHovered())
         {
             SetObjectToTower();
-           
+            curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);   
         }
         else if (UI->MineButton.CallIfHovered())
         {
             SetObjectToMine();
+            curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);
         }
         else if (UI->MageButton.CallIfHovered())
         {
             SetObjectToMage();
+            curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);
         }
         else
         {
-
             //upgrade
             if ((Building::GetIndexOfHoveredTower(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location))!=-1)
             {
@@ -71,19 +72,21 @@ void GameInstance::HandleButtons(double DeltaTime)
             }
             else if (CurrentPlaceObject!="")
 {
-                Building* curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);
+                //Building* curBuilding = getBuildingManager().getBuilding(CurrentPlaceObject);
                 
                 if (curBuilding->BuildingType == "Mine") {
                     if (Gold >= curBuilding->Cost && Terrain::GetGroundTypeAtMouse() == GroundType::Dirt1 && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)) {
                         GameData::Buildings.push_back(new Building(curBuilding, ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)));
                         Gold -= curBuilding->Cost;
                         CurrentPlaceObject = "";
+                        curBuilding = nullptr;
                     }
                 } else {
                     if (Gold >= curBuilding->Cost && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)) {
                         GameData::Buildings.push_back(new Building(curBuilding, ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)));
                         Gold -= curBuilding->Cost;
                         CurrentPlaceObject = "";
+                        curBuilding = nullptr;
                     } else {
                         std::cout << "[DEBUG] Should play audio here..." << std::endl;
                         //play sound here
@@ -137,7 +140,11 @@ void GameInstance::HandleButtons(double DeltaTime)
     {
         MouseCooldown -= DeltaTime * ! sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
-
+        if(curBuilding != nullptr) {
+            curBuilding->Loc = ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location);
+            //GameData::Buildings.push_back(curBuilding);
+            GameInstance::RenderEntity(curBuilding);
+        }
     }
 }
 
@@ -478,7 +485,8 @@ void GameInstance::LoadGame()
         sf::Vector2f Loc;
         save.read((char*)&Loc.x, 4);
         save.read((char*)&Loc.y, 4);
-        
+
+
         Entity::StaticEntities.push_back(new DecayEntity(tStr,1,Loc));
 
     }
@@ -486,12 +494,15 @@ void GameInstance::LoadGame()
     save.close();
 }
 
+void GameInstance::RenderEntity(Entity* entity) {
+    entity->RenderEntity(window, DeltaTime);
+}
+
 void GameInstance::GameLoop()
 {
     sf::Event event;
 
     //time values
-    double DeltaTime = 0;
     std::chrono::steady_clock::time_point t1;
     std::chrono::steady_clock::time_point t2;
     std::chrono::duration<double, std::milli> ms_double;
