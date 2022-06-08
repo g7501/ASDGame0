@@ -80,6 +80,9 @@ void GameInstance::HandleButtons(double DeltaTime)
                         Gold -= curBuilding->Cost;
                         CurrentPlaceObject = "";
                         curBuilding = nullptr;
+                    } else {
+                        std::cout << "[DEBUG] Should play audio here..." << std::endl;
+                        //play sound here
                     }
                 } else {
                     if (Gold >= curBuilding->Cost && Building::NotWithinBuilding(GameData::Buildings, (sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location)) {
@@ -143,6 +146,7 @@ void GameInstance::HandleButtons(double DeltaTime)
         if(curBuilding != nullptr) {
             curBuilding->Loc = ((sf::Vector2f)sf::Mouse::getPosition() / Camera::Zoom - Camera::Location);
             //GameData::Buildings.push_back(curBuilding);
+            curBuilding->Components[0]->Visual.setColor(sf::Color(255, 255, 255, 100));
             GameInstance::RenderEntity(curBuilding);
         }
     }
