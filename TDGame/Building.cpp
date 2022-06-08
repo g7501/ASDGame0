@@ -4,8 +4,7 @@
 #include <fstream>
 
 Building::Building(std::string buildingName, std::string componentName, std::string buildingType, int damage, float speed, float timeExists, float timeGap,
-	float attackDelay, int health, int size, int range, int cost, std::string audioValue, 
-	std::string audioComponent) : Entity(buildingName) {
+	float attackDelay, int health, int size, int range, int cost) : Entity(buildingName) {
 	if (!componentName.empty())
 		Components.push_back(new Component(componentName));
 
@@ -20,9 +19,11 @@ Building::Building(std::string buildingName, std::string componentName, std::str
 	Range = range;
 	Cost = cost;
 
-	AudioValue = audioValue;
-	AudioComponent = audioComponent;
-	AudioComponents.emplace(audioValue, new SoundComponent(audioComponent));
+	//AudioComponents.emplace(audioValue, new SoundComponent(audioComponent));
+	//std::cout << AudioComponents.size() << std::endl;
+	//for (int i = 0; i < AudioComponents.size(); i++) {
+	//	std::cout << AudioComponents[i] << std::endl;
+	//}
 }
 
 Building::Building(Building* building, sf::Vector2f loc) : Entity(building->Name) {
@@ -39,9 +40,11 @@ Building::Building(Building* building, sf::Vector2f loc) : Entity(building->Name
 	Range = building->Range;
 	Cost = building->Cost;
 
-	AudioValue = building->AudioValue;
-	AudioComponent = building->AudioComponent;
-	AudioComponents.emplace(building->AudioValue, new SoundComponent(building->AudioComponent));
+	std::map<std::string, SoundComponent*>::iterator it;
+
+	for (it = building->AudioComponents.begin(); it != building->AudioComponents.end(); it++) {
+		AudioComponents.emplace(it->first, it->second);
+	}
 
 	this->Loc = loc;
 }
