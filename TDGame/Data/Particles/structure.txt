@@ -1,0 +1,13 @@
+lifetime
+spawn time wait
+spawn time wait variance
+has random velocity
+
+
+location variance
+size
+shape type (name of texture)
+colour r
+colour g
+colour b
+lifetime deltasize

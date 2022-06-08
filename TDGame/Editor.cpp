@@ -13,6 +13,12 @@ void Editor::ParticleEditor()
 {
     sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600), "Particle Editor");
 
+
+
+
+
+
+
     while (window->isOpen())
     {
         sf::Event event;
@@ -29,7 +35,7 @@ void Editor::ParticleEditor()
                 if (event.key.code == sf::Keyboard::N)
                 {
                     delete CurrentFX;
-                    CurrentFX = new ParticleFX();
+                    CurrentFX = new ParticleFX("test");
                 }
             }
         }

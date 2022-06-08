@@ -12,6 +12,8 @@ struct ParticleTemplate
 	sf::Color Colour;
 	float LifeTime;
 	float DeltaSize;
+	bool RandomRotation;
+	float DeltaVelocity;
 };
 
 
@@ -50,7 +52,7 @@ public:
 
 	void Render(sf::RenderWindow* window, sf::Vector2f RenderLoc, double DeltaTime);
 
-	ParticleFX();
+	ParticleFX(std::string name);
 
 private:
 	float SpawnShapeTimeRemain;

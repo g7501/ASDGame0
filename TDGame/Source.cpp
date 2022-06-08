@@ -6,12 +6,14 @@
 
 int main() {
 	int choice = 0;
-	MainMenu* Menu = new MainMenu();
-	choice = Menu->MenuLoop();
+	//MainMenu* Menu = new MainMenu();
+	//choice = Menu->MenuLoop();
 
-	//ConfigData conf = getConfiguration();
 
-	//choice = conf.Choice;//temp
+	ConfigData conf = getConfiguration();
+
+
+	choice = conf.Choice;//temp
 
 	if (choice == 0) {
 		Anim::LoadAllAnims();
@@ -33,10 +35,8 @@ int main() {
 		Game->GameLoop();
 	}
 
-#ifdef NDEBUG
 
-	
-#else
+
 	//particle editor
 	if (choice == 2)
 	{
@@ -45,5 +45,5 @@ int main() {
 		Editor* editor = new Editor();
 		editor->RunEditor(choice);
 	}
-#endif
+
 }
